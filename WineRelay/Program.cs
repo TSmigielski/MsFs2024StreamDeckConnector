@@ -1,10 +1,30 @@
-﻿using SimConnect.NET;
+﻿using System.Text;
+using Shared;
+using SimConnect.NET;
 
-var client = new SimConnectClient("MSFS StreamDeck Connector");
+var socket = SocketUtils.GetSocket();
+var simClient = new SimConnectClient("MSFS StreamDeck Connector");
+
+AppDomain.CurrentDomain.ProcessExit += async (sender, @event) => {
+   var simDisconnectTask = simClient.DisconnectAsync();
+   socket.Close();
+   await simDisconnectTask;
+};
 
 try
 {
-   await client.ConnectAsync();
+    await socket.ConnectAsync(SocketUtils.GetEndPoint());
+}
+catch (Exception ex)
+{
+   Console.WriteLine("Failed to connect to the MsFsStreamDeckConnector socket, exception:");
+   Console.WriteLine(ex);
+   return;
+}
+
+try
+{
+   await simClient.ConnectAsync();
 }
 catch (Exception ex)
 {
@@ -16,11 +36,16 @@ catch (Exception ex)
 while (true)
 {
    // Get aircraft data
-   var altitude = await client.SimVars.GetAsync<double>("PLANE ALTITUDE", "feet");
-   var airspeed = await client.SimVars.GetAsync<double>("AIRSPEED INDICATED", "knots");
+   var altitude = await simClient.SimVars.GetAsync<double>("PLANE ALTITUDE", "feet");
+   var airspeed = await simClient.SimVars.GetAsync<double>("AIRSPEED INDICATED", "knots");
+   var sb = new StringBuilder();
 
-   Console.WriteLine($"Altitude: {altitude:F0} ft");
-   Console.WriteLine($"Airspeed: {airspeed:F0} kts");
+   sb.AppendLine($"Altitude: {altitude:F0} ft");
+   sb.AppendLine($"Airspeed: {airspeed:F0} kts");
 
-   await Task.Delay(1000);
+   var bytes = Encoding.UTF8.GetBytes(sb.ToString()).ToList();
+   bytes.Add((byte) MessageType.Eot);
+
+   await socket.SendAsync(bytes.ToArray());
+   await Task.Delay(100);
 }

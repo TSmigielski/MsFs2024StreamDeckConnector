@@ -9,4 +9,7 @@
    <ItemGroup>
      <PackageReference Include="SimConnect.NET" Version="0.1.18" />
    </ItemGroup>
+   <ItemGroup>
+     <ProjectReference Include="..\Shared\Shared.csproj" />
+   </ItemGroup>
 </Project>
