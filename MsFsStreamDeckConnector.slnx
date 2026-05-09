@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="StreamDeckRelay/StreamDeckRelay.csproj" />
+  <Project Path="WineRelay/WineRelay.csproj" />
+</Solution>
