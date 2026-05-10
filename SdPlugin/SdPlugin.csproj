@@ -13,6 +13,9 @@
       <Nullable>enable</Nullable>
    </PropertyGroup>
    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
+   </ItemGroup>
+   <ItemGroup>
       <PackageReference Include="StreamDeck-Tools" Version="7.0.0" />
    </ItemGroup>
    <ItemGroup>
@@ -21,6 +24,6 @@
       <None Update="PropertyInspector/*" CopyToOutputDirectory="PreserveNewest" />
    </ItemGroup>
    <Target Name="Pack StreamDeck plugin" AfterTargets="Build">
-      <Exec WorkingDirectory="$(TargetDir)" Command="streamdeck pack -f"/>
+      <Exec WorkingDirectory="$(TargetDir)" Command="streamdeck pack -f" />
    </Target>
 </Project>

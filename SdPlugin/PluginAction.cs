@@ -1,5 +1,5 @@
 using BarRaider.SdTools;
-namespace Plugin;
+namespace SdPlugin;
 
 [PluginActionId("com.tomasz-smigielski.msfs2024connector.test")]
 public class PluginAction(ISDConnection connection, InitialPayload payload) : KeypadBase(connection, payload)
