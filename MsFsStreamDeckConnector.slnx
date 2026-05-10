@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="Plugin/Plugin.csproj" />
   <Project Path="Shared/Shared.csproj" />
-  <Project Path="StreamDeckRelay/StreamDeckRelay.csproj" />
+  <Project Path="Plugin/Plugin.csproj" />
   <Project Path="WineRelay/WineRelay.csproj" />
+  <Project Path="WineRelayHost/WineRelayHost.csproj" />
 </Solution>
