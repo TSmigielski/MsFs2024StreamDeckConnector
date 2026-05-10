@@ -1,0 +1,37 @@
+{
+  "Actions": [
+    {
+      "Icon": "Images/icon",
+      "Name": "MSFS2024 Connector",
+      "States": [
+        {
+          "Image": "Images/pluginAction",
+          "TitleAlignment": "middle",
+          "FontSize": 12
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "Tooltip": "Sample Plugin to Test SDTools",
+      "UUID": "com.tomasz-smigielski.msfs2024connector.test"
+    }
+  ],
+  "UUID": "com.tomasz-smigielski.msfs2024connector",
+  "Author": "Tomasz Śmigielski",
+  "Description": "Lorem ipsum",
+  "Name": "MSFS2024 Connector Plugin",
+  "Icon": "Images/pluginIcon",
+  "Version": "0.1.0.9",
+  "CodePath": "Plugin.exe",
+  "Category": "MSFS2024 Connector Plugin",
+  "CategoryIcon": "Images/categoryIcon",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "SDKVersion": 3,
+  "Software": {
+    "MinimumVersion": "7.0"
+  }
+}
