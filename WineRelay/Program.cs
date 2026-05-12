@@ -1,8 +1,8 @@
-﻿using System.Net.Sockets;
+﻿using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Microsoft.FlightSimulator.SimConnect;
-using Shared;
 using WineRelay;
 
 var jsonSettings = new JsonSerializerOptions
@@ -11,7 +11,7 @@ var jsonSettings = new JsonSerializerOptions
    WriteIndented = true
 };
 
-using var udp = new UdpClient(SocketUtils.GetEndPoint());
+using var udp = new UdpClient(new IPEndPoint(IPAddress.Loopback, 13337));
 using var simConnect = new SimConnect("MSFS StreamDeck Connector", 0, 0x0402, null, 0);
 simConnect.Initialize();
 
@@ -61,26 +61,26 @@ void DispatchedEventHandler(SIMCONNECT_RECV pData, uint cbData)
    }
 }
 
-while (true)
-{
-   var response = await udp.ReceiveAsync();
-   var message = JsonSerializer.Deserialize<Message>(response.Buffer);
-   if (message == null)
-      continue;
-
-   Console.WriteLine($"Received a message:{Environment.NewLine}{JsonSerializer.Serialize(message)}");
-
-   object? value = null;
-   switch (message.Type)
-   {
-      // case MessageType.GetDouble:
-      //    value = await simClient.SimVars.GetAsync<double>(message.SimVarName, message.Unit);
-      //    break;
-   }
-
-   if (value != null)
-      await udp.SendAsync(JsonSerializer.SerializeToUtf8Bytes(value), response.RemoteEndPoint);
-}
+// while (true)
+// {
+//    var response = await udp.ReceiveAsync();
+//    var message = JsonSerializer.Deserialize<Message>(response.Buffer);
+//    if (message == null)
+//       continue;
+//
+//    Console.WriteLine($"Received a message:{Environment.NewLine}{JsonSerializer.Serialize(message)}");
+//
+//    object? value = null;
+//    switch (message.Type)
+//    {
+//       // case MessageType.GetDouble:
+//       //    value = await simClient.SimVars.GetAsync<double>(message.SimVarName, message.Unit);
+//       //    break;
+//    }
+//
+//    if (value != null)
+//       await udp.SendAsync(JsonSerializer.SerializeToUtf8Bytes(value), response.RemoteEndPoint);
+// }
 
 enum Definitions
 {

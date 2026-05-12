@@ -1,6 +1,4 @@
 <Solution>
-  <Project Path="Shared/Shared.csproj" />
-  <Project Path="SdPlugin/SdPlugin.csproj" />
   <Project Path="WineRelay/WineRelay.csproj" />
   <Project Path="WineRelayHost/WineRelayHost.csproj" />
 </Solution>
