@@ -7,9 +7,10 @@
       <Nullable>enable</Nullable>
    </PropertyGroup>
    <ItemGroup>
-     <PackageReference Include="SimConnect.NET" Version="0.1.18" />
+      <Reference Include="Microsoft.FlightSimulator.SimConnect.dll"/>
+      <Reference Include="SimConnect.dll"/>
    </ItemGroup>
    <ItemGroup>
-     <ProjectReference Include="..\Shared\Shared.csproj" />
+      <ProjectReference Include="..\Shared\Shared.csproj" />
    </ItemGroup>
 </Project>

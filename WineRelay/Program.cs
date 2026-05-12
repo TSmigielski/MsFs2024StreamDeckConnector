@@ -1,20 +1,65 @@
 ﻿using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text.Json;
+using Microsoft.FlightSimulator.SimConnect;
 using Shared;
-using SimConnect.NET;
+using WineRelay;
 
 using var udp = new UdpClient(SocketUtils.GetEndPoint());
-using var simClient = new SimConnectClient("MSFS StreamDeck Connector");
+using var simConnect = new SimConnect("MSFS StreamDeck Connector", 0, 0x0402, null, 0);
+simConnect.Initialize();
 
-try
+simConnect.AddToDataDefinition(Definitions.Struct1, "Title", null, SIMCONNECT_DATATYPE.STRING256, 0, SimConnect.SIMCONNECT_UNUSED);
+simConnect.AddToDataDefinition(Definitions.Struct1, "Airspeed True", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
+simConnect.AddToDataDefinition(Definitions.Struct1, "Trailing Edge Flaps Left Percent", "percent", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
+simConnect.AddToDataDefinition(Definitions.Struct1, "Spoilers Handle Position", "percent", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
+simConnect.AddToDataDefinition(Definitions.Struct1, "Autopilot Master", "bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+
+simConnect.RegisterDataDefineStruct<Struct1>(Definitions.Struct1);
+simConnect.RequestDataOnSimObject(Requests.Request1, Definitions.Struct1, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+
+var i = 0;
+
+while (true)
 {
-   await simClient.ConnectAsync();
+   if (i >= 50)
+   {
+      i = 0;
+      // simConnect.RequestDataOnSimObject(Requests.Request1, Definitions.Struct1, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+   }
+   // The handler gets called only when an event actually gets dispatched.
+   simConnect.ReceiveDispatch(DispatchedEventHandler);
+   await Task.Delay(50);
+   i++;
 }
-catch (Exception ex)
+
+
+void DispatchedEventHandler(SIMCONNECT_RECV pData, uint cbData)
 {
-   Console.WriteLine("Failed to connect to MSFS, exception:");
-   Console.WriteLine(ex);
-   return;
+   switch ((SIMCONNECT_RECV_ID)pData.dwID)
+   {
+      case SIMCONNECT_RECV_ID.EXCEPTION:
+         var exception = (SIMCONNECT_RECV_EXCEPTION) pData;
+         Console.WriteLine(JsonSerializer.Serialize(exception, new JsonSerializerOptions
+         {
+            IncludeFields = true,
+            WriteIndented = true
+         }));
+         return;
+
+      case SIMCONNECT_RECV_ID.SIMOBJECT_DATA:
+         var simObject = (SIMCONNECT_RECV_SIMOBJECT_DATA) pData;
+         Console.WriteLine(JsonSerializer.Serialize(simObject, new JsonSerializerOptions
+         {
+            IncludeFields = true,
+            WriteIndented = true
+         }));
+         return;
+
+      default:
+         Console.WriteLine("Unhandled dwID: " + pData.dwID);
+         return;
+   }
 }
 
 while (true)
@@ -29,24 +74,32 @@ while (true)
    object? value = null;
    switch (message.Type)
    {
-      case MessageType.GetDouble:
-         value = await simClient.SimVars.GetAsync<double>(message.SimVarName, message.Unit);
-         break;
+      // case MessageType.GetDouble:
+      //    value = await simClient.SimVars.GetAsync<double>(message.SimVarName, message.Unit);
+      //    break;
    }
 
    if (value != null)
       await udp.SendAsync(JsonSerializer.SerializeToUtf8Bytes(value), response.RemoteEndPoint);
+}
 
-   // Get aircraft data
-   // var airspeed = await simClient.SimVars.GetAsync<double>("AIRSPEED INDICATED", "knots");
-   // var sb = new StringBuilder();
-   //
-   // sb.AppendLine($"Altitude: {altitude:F0} ft");
-   // sb.AppendLine($"Airspeed: {airspeed:F0} kts");
-   //
-   // var bytes = Encoding.UTF8.GetBytes(sb.ToString()).ToList();
-   // bytes.Add((byte)MessageType.Eot);
-   //
-   // await socket.SendAsync(bytes.ToArray());
-   // await Task.Delay(100);
+enum Definitions
+{
+   Struct1 = 333,
+}
+
+enum Requests
+{
+   Request1 = 666,
+}
+
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+struct Struct1
+{
+   [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+   public string title; // Aircraft title
+   public double trueAirspeed; // True airspeed in knots
+   public double flaps; // Flaps position
+   public double spoilers; // Airbrakes / Spoilers position
+   public bool autopilotMaster;
 }
