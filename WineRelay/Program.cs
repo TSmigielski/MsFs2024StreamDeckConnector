@@ -5,6 +5,12 @@ using Microsoft.FlightSimulator.SimConnect;
 using Shared;
 using WineRelay;
 
+var jsonSettings = new JsonSerializerOptions
+{
+   IncludeFields = true,
+   WriteIndented = true
+};
+
 using var udp = new UdpClient(SocketUtils.GetEndPoint());
 using var simConnect = new SimConnect("MSFS StreamDeck Connector", 0, 0x0402, null, 0);
 simConnect.Initialize();
@@ -36,28 +42,21 @@ while (true)
 
 void DispatchedEventHandler(SIMCONNECT_RECV pData, uint cbData)
 {
-   switch ((SIMCONNECT_RECV_ID)pData.dwID)
+   var @event = (SIMCONNECT_RECV_ID)pData.dwID;
+   switch (@event)
    {
       case SIMCONNECT_RECV_ID.EXCEPTION:
          var exception = (SIMCONNECT_RECV_EXCEPTION) pData;
-         Console.WriteLine(JsonSerializer.Serialize(exception, new JsonSerializerOptions
-         {
-            IncludeFields = true,
-            WriteIndented = true
-         }));
+         Console.WriteLine(JsonSerializer.Serialize(exception, jsonSettings));
          return;
 
       case SIMCONNECT_RECV_ID.SIMOBJECT_DATA:
          var simObject = (SIMCONNECT_RECV_SIMOBJECT_DATA) pData;
-         Console.WriteLine(JsonSerializer.Serialize(simObject, new JsonSerializerOptions
-         {
-            IncludeFields = true,
-            WriteIndented = true
-         }));
+         Console.WriteLine(JsonSerializer.Serialize(simObject, jsonSettings));
          return;
 
       default:
-         Console.WriteLine("Unhandled dwID: " + pData.dwID);
+         Console.WriteLine($"Unhandled event `{pData.dwID}|{@event:G}`:" + JsonSerializer.Serialize(pData, jsonSettings));
          return;
    }
 }
