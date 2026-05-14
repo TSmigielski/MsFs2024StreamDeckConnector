@@ -18,13 +18,21 @@ public static class SimConnectExtensions
          simConnect.MapClientEventToSimEvent(Events.FlightDirectorToggle, "TOGGLE_FLIGHT_DIRECTOR");
          simConnect.MapClientEventToSimEvent(Events.FlightLevelChangeToggle, "FLIGHT_LEVEL_CHANGE");
          simConnect.MapClientEventToSimEvent(Events.VerticalSpeedSet, "AP_VS_SET");
+         simConnect.MapClientEventToSimEvent(Events.AutopilotHeadingToggle, "AP_HDG_HOLD");
+         simConnect.MapClientEventToSimEvent(Events.AutopilotLevelerToggle, "AP_WING_LEVELER");
+         simConnect.MapClientEventToSimEvent(Events.AutopilotAltituteHoldToggle, "AP_ALT_HOLD");
+         simConnect.MapClientEventToSimEvent(Events.AutopilotHeadingSet, "HEADING_BUG_SET");
+         simConnect.MapClientEventToSimEvent(Events.AutopilotHeadingSetCurrent, "AP_HDG_CURRENT_HDG_SET");
 
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT MASTER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT FLIGHT LEVEL CHANGE", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT VERTICAL HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
-         // simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT DEFAULT PITCH MODE", "Enum", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
-         // simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT DEFAULT ROLL MODE", "Enum", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT HEADING LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT WING LEVELER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT HEADING LOCK DIR", "Degrees", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK VAR", "Feet", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
 
          simConnect.RegisterDataDefineStruct<AutopilotSettings>(Definition.AutopilotData);
 

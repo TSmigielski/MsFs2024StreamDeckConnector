@@ -10,5 +10,14 @@ public enum Events
    /// <summary>
    /// Accepts a bool for enable/disable.
    /// </summary>
-   VerticalSpeedSet
+   VerticalSpeedSet,
+   AutopilotHeadingToggle,
+   AutopilotLevelerToggle,
+   AutopilotAltituteHoldToggle,
+
+   /// <summary>
+   /// Accepts an integer.
+   /// </summary>
+   AutopilotHeadingSet,
+   AutopilotHeadingSetCurrent,
 }

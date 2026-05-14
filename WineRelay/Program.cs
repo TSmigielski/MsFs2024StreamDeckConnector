@@ -45,10 +45,10 @@ void DispatchedEventHandler(SIMCONNECT_RECV pData, uint cbData)
          Console.WriteLine(JsonSerializer.Serialize(simObject, jsonSettings));
          switch ((Definition)simObject.dwDefineID)
          {
-             case Definition.AutopilotData:
-                Console.WriteLine($"Sending to: {remote.Address}:{remote.Port}");
-                udp.Send(JsonSerializer.SerializeToUtf8Bytes(simObject.dwData[0]), remote);
-                return;
+            case Definition.AutopilotData:
+               Console.WriteLine($"Sending to: {remote.Address}:{remote.Port}");
+               udp.Send(JsonSerializer.SerializeToUtf8Bytes(simObject.dwData[0]), remote);
+               return;
 
             default:
                Console.WriteLine($"Unhandled SimObjectEvent!");
@@ -58,7 +58,7 @@ void DispatchedEventHandler(SIMCONNECT_RECV pData, uint cbData)
       default:
          Console.WriteLine($"Unhandled event `{pData.dwID}|{@event:G}`:" + JsonSerializer.Serialize(pData, jsonSettings));
          return;
-    }
+   }
 }
 
 async Task UdpLoop()
@@ -107,6 +107,18 @@ async Task UdpLoop()
 
          case ToggleAction.Vs:
             simConnect.TransmitEvent(Events.VerticalSpeedSet, (uint)(action.State ? 1 : 0));
+            break;
+
+         case ToggleAction.Hdg:
+            simConnect.TransmitEvent(Events.AutopilotHeadingToggle);
+            break;
+
+         case ToggleAction.Lvl:
+            simConnect.TransmitEvent(Events.AutopilotLevelerToggle);
+            break;
+
+         case ToggleAction.Alt:
+            simConnect.TransmitEvent(Events.AutopilotAltituteHoldToggle);
             break;
 
          default:

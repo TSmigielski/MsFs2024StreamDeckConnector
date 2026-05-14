@@ -6,5 +6,8 @@ public enum ToggleAction
    Fd,
    Flc,
    Nav,
-   Vs
+   Vs,
+   Hdg,
+   Lvl,
+   Alt
 }

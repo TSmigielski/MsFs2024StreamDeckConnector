@@ -59,6 +59,9 @@ class MsFsConnector(PluginBase):
     def UpdateActionsData(self, data):
         for action in self.actions:
             match action.selectedToggleCode:
+                case "ALT":
+                    action.toggleState = data["AltitudeHold"]
+
                 case "AP":
                     action.toggleState = data["AutopilotMaster"]
 
@@ -67,6 +70,12 @@ class MsFsConnector(PluginBase):
 
                 case "FLC":
                     action.toggleState = data["FlightLevelChange"]
+
+                case "HDG":
+                    action.toggleState = data["HeadingMode"]
+
+                case "LVL":
+                    action.toggleState = data["LevelerMode"]
 
                 # case "NAV":
                 #     action.toggleState = data["FlightDirector"]

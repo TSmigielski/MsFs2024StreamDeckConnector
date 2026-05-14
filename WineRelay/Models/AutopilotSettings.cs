@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using WineRelay.Enums.Aircraft;
 
 namespace WineRelay.Models;
 
@@ -10,5 +9,9 @@ public struct AutopilotSettings
    public bool FlightDirector { get; set; }
    public bool FlightLevelChange { get; set; }
    public bool VerticalSpeed { get; set; }
-   // public RollMode RollMode { get; set; }
+   public bool HeadingMode { get; set; }
+   public bool LevelerMode { get; set; }
+   public bool AltitudeHold { get; set; }
+   public int Heading { get; set; }
+   public int Altitude { get; set; }
 }
