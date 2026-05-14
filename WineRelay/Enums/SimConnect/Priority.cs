@@ -1,4 +1,4 @@
-namespace WineRelay.Enums;
+namespace WineRelay.Enums.SimConnect;
 
 enum Priority
 {

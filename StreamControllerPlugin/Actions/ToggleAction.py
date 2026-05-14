@@ -31,7 +31,7 @@ class ToggleAction(ActionBase):
 
     def get_config_rows(self):
         self.storeModel = Gtk.ListStore.new([str, str])
-        for action in sorted(Enums.ToggleActions, key=lambda x: x[1]):
+        for action in Enums.ToggleActions:
             self.storeModel.append([action[1], action[0]])
 
         self.prefRow = Adw.PreferencesRow(title="ToggleAction")
@@ -76,9 +76,10 @@ class ToggleAction(ActionBase):
             "State": self.toggleState
         }
 
-        self.plugin_base.udpTransport.sendto(json.dumps(payload).encode(encoding="utf-8"))
+        self.plugin_base.udp.sendto(json.dumps(payload).encode(encoding="utf-8"))
 
     def OnPrefInputChanged(self, rowInput):
         settings = self.get_settings()
         settings[self.selectedToggleKey] = self.selectedToggle = rowInput.get_active()
         self.set_settings(settings)
+        self.set_top_label(Enums.ToggleActions[self.selectedToggle][0])

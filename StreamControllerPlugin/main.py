@@ -15,7 +15,7 @@ class MsFsConnector(PluginBase):
     def __init__(self):
         super().__init__()
 
-        self.udpTransport = None
+        self.udp = None
 
         # Register actions
         self.toggleActionHolder = ActionHolder(
@@ -39,20 +39,34 @@ class MsFsConnector(PluginBase):
 
     async def UdpLoop(self):
         self.loop = asyncio.get_running_loop()
+        self.loop.create_task(self.debug_loop())
 
-        await self.loop.create_datagram_endpoint(
-            lambda: UdpHandler(self),
+        transport, protocol = await self.loop.create_datagram_endpoint(
+            lambda: UdpHandler(),
             remote_addr=("127.0.0.1", 13337)
         )
 
+        self.udp = transport
+
+    async def debug_loop(self):
+        while True:
+            print("loop alive")
+            await asyncio.sleep(1)
+
 
 class UdpHandler(asyncio.DatagramProtocol):
-    def __init__(self, plugin):
-        self.plugin = plugin
-
-    def connection_made(self, udpTransport):
-        self.plugin.udpTransport = self.updTransport = udpTransport
-        self.updTransport.sendto(b"Hello async UDP!")
+    def connection_made(self, udp):
+        udp.sendto(b"Hello async UDP!")
 
     def datagram_received(self, data, addr):
         print("Received:", data.decode())
+
+    def connection_lost(self, exc):
+        print("Connection lost =<")
+        if exc is not None:
+            print(exc)
+
+    def error_received(self, err):
+        print("ERROR!!!!!")
+        if err is not None:
+            print(err)
