@@ -8,7 +8,8 @@ public static class SimConnectExtensions
    extension (SimConnect simConnect)
    {
       public void TransmitEvent(Events @event, uint data = 0) => simConnect.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, @event, data, Priority.Default, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-      public void RequestData(Definition dataDefinition) => simConnect.RequestDataOnSimObject(Request.Request1, dataDefinition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 2, 0, 1);
+      public void RequestData(Definition dataDefinition) => simConnect.RequestDataOnSimObject(Request.Normal, dataDefinition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+      public void RequestDataDelayed(Definition dataDefinition) => simConnect.RequestDataOnSimObject(Request.Normal, dataDefinition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 5, 0, 1);
 
       public void Initialize()
       {
@@ -26,6 +27,9 @@ public static class SimConnectExtensions
          // simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT DEFAULT ROLL MODE", "Enum", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
 
          simConnect.RegisterDataDefineStruct<AutopilotSettings>(Definition.AutopilotData);
+
+         // Longpolling request, will transmit data set in the sim
+         simConnect.RequestDataOnSimObject(Request.LongPolling, Definition.AutopilotData, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SECOND, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 1, 0);
       }
    }
 }

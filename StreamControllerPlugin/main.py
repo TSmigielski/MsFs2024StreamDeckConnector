@@ -1,5 +1,8 @@
 # Import libs
-import asyncio
+import json
+import socket
+import threading
+import time
 
 # Import StreamController modules
 from src.backend.PluginManager.PluginBase import PluginBase
@@ -9,13 +12,14 @@ from src.backend.PluginManager.ActionHolder import ActionHolder
 from .Actions.ToggleAction import ToggleAction
 
 PluginId = "com_TomaszSmigielski_MsFs2024Connector"
+UdpAddress = ("127.0.0.1", 13337)
 
 
 class MsFsConnector(PluginBase):
     def __init__(self):
         super().__init__()
-
-        self.udp = None
+        self.actions = set()
+        self.lastBufferedDataGramTime = 1
 
         # Register actions
         self.toggleActionHolder = ActionHolder(
@@ -34,39 +38,55 @@ class MsFsConnector(PluginBase):
             app_version="1.1.1-alpha"
         )
 
-        # Start Udp loop
-        asyncio.run(self.UdpLoop())
+        # Start Udp client
+        self.udpClient = UdpClient(self)
+        self.udpClient.start()
 
-    async def UdpLoop(self):
-        self.loop = asyncio.get_running_loop()
-        self.loop.create_task(self.debug_loop())
+    def RegisterAction(self, action):
+        self.actions.add(action)
 
-        transport, protocol = await self.loop.create_datagram_endpoint(
-            lambda: UdpHandler(),
-            remote_addr=("127.0.0.1", 13337)
-        )
+    def SendDatagram(self, data):
+        self.udpClient.sock.sendto(data, UdpAddress)
 
-        self.udp = transport
+    def SendBufferedDatagram(self, data):
+        now = time.perf_counter()
+        if now - self.lastBufferedDataGramTime < .25:
+            return
 
-    async def debug_loop(self):
+        self.lastBufferedDataGramTime = now
+        self.SendDatagram(data)
+
+    def UpdateActionsData(self, data):
+        for action in self.actions:
+            match action.selectedToggleCode:
+                case "AP":
+                    action.toggleState = data["AutopilotMaster"]
+
+                case "FD":
+                    action.toggleState = data["FlightDirector"]
+
+                case "FLC":
+                    action.toggleState = data["FlightLevelChange"]
+
+                # case "NAV":
+                #     action.toggleState = data["FlightDirector"]
+
+                case "VS":
+                    action.toggleState = data["VerticalSpeed"]
+
+            action.UpdateVisuals()
+
+
+class UdpClient(threading.Thread):
+    def __init__(self, plugin):
+        super().__init__(daemon=True)
+        self.plugin = plugin
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.sendto(b"Initialized", UdpAddress)
+
+    def run(self):
         while True:
-            print("loop alive")
-            await asyncio.sleep(1)
-
-
-class UdpHandler(asyncio.DatagramProtocol):
-    def connection_made(self, udp):
-        udp.sendto(b"Hello async UDP!")
-
-    def datagram_received(self, data, addr):
-        print("Received:", data.decode())
-
-    def connection_lost(self, exc):
-        print("Connection lost =<")
-        if exc is not None:
-            print(exc)
-
-    def error_received(self, err):
-        print("ERROR!!!!!")
-        if err is not None:
-            print(err)
+            data, addr = self.sock.recvfrom(100_000)
+            decoded = data.decode()
+            print(f"Received from {addr}: {decoded}")
+            self.plugin.UpdateActionsData(json.loads(decoded))

@@ -29,6 +29,9 @@ while (true)
 
 void DispatchedEventHandler(SIMCONNECT_RECV pData, uint cbData)
 {
+   if (remote == null)
+      return;
+
    var @event = (SIMCONNECT_RECV_ID)pData.dwID;
    switch (@event)
    {
@@ -78,6 +81,7 @@ async Task UdpLoop()
          Console.WriteLine(Encoding.UTF8.GetString(response.Buffer));
          Console.WriteLine("==============================================================");
          Console.WriteLine(ex);
+         simConnect.RequestData(Definition.AutopilotData);
          continue;
       }
 
@@ -110,6 +114,6 @@ async Task UdpLoop()
             continue;
       }
 
-      simConnect.RequestData(Definition.AutopilotData);
+      simConnect.RequestDataDelayed(Definition.AutopilotData);
    }
 }

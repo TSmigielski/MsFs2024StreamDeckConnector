@@ -15,19 +15,21 @@ class ToggleAction(ActionBase):
         super().__init__(*args, **kwargs)
 
     def on_ready(self) -> None:
+        self.plugin_base.RegisterAction(self)
         # icon_path = os.path.join(self.plugin_base.PATH, "Assets", "info.png")
         # self.set_media(media_path=icon_path, size=0.75)
-        self.selectedToggle = None
+        self.selectedToggleIndex = None
+        self.selectedToggleCode = None
         self.toggleState = False
 
         settings = self.get_settings()
         if self.selectedToggleKey in settings:
-            self.selectedToggle = settings[self.selectedToggleKey]
-            self.set_top_label(Enums.ToggleActions[self.selectedToggle][0])
+            self.SetSelectedToggle(settings[self.selectedToggleKey])
         else:
             self.set_top_label("New")
 
         self.set_bottom_label("OFF")
+        self.plugin_base.SendBufferedDatagram(b"DataRequest")
 
     def get_config_rows(self):
         self.storeModel = Gtk.ListStore.new([str, str])
@@ -48,8 +50,8 @@ class ToggleAction(ActionBase):
         self.prefRowInput.pack_start(self.cellRenderer, True)
         self.prefRowInput.add_attribute(self.cellRenderer, "text", 0)
 
-        if self.selectedToggle is not None:
-            self.prefRowInput.set_active(self.selectedToggle)
+        if self.selectedToggleIndex is not None:
+            self.prefRowInput.set_active(self.selectedToggleIndex)
 
         self.prefRowInput.connect("changed", self.OnPrefInputChanged)
 
@@ -65,21 +67,31 @@ class ToggleAction(ActionBase):
         return [self.prefRow]
 
     def on_key_down(self) -> None:
-        if self.selectedToggle is None or not self.selectedToggle >= 0:
+        if self.selectedToggleIndex is None or not self.selectedToggleIndex >= 0:
             return
 
         self.toggleState = not self.toggleState
-        self.set_bottom_label("ON" if self.toggleState else "OFF")
 
         payload = {
-            "Toggle": Enums.ToggleActions[self.selectedToggle][0],
+            "Toggle": self.selectedToggleCode,
             "State": self.toggleState
         }
 
-        self.plugin_base.udp.sendto(json.dumps(payload).encode(encoding="utf-8"))
+        self.plugin_base.SendDatagram(json.dumps(payload).encode(encoding="utf-8"))
 
     def OnPrefInputChanged(self, rowInput):
+        self.SetSelectedToggle(rowInput.get_active())
+        self.UpdateSetting(self.selectedToggleKey, self.selectedToggleIndex)
+
+    def SetSelectedToggle(self, index):
+        self.selectedToggleIndex = index
+        self.selectedToggleCode = Enums.ToggleActions[index][0]
+        self.set_top_label(self.selectedToggleCode)
+
+    def UpdateSetting(self, key, value):
         settings = self.get_settings()
-        settings[self.selectedToggleKey] = self.selectedToggle = rowInput.get_active()
+        settings[key] = value
         self.set_settings(settings)
-        self.set_top_label(Enums.ToggleActions[self.selectedToggle][0])
+
+    def UpdateVisuals(self):
+        self.set_bottom_label("ON" if self.toggleState else "OFF")
