@@ -1,6 +1,6 @@
 namespace WineRelay.Enums.Udp;
 
-public enum ToggleAction
+public enum Toggle
 {
    Ap,
    Fd,

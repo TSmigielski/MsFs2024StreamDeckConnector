@@ -67,10 +67,10 @@ class MsFsConnector(PluginBase):
     def RegisterDial(self, dial):
         self.dials.add(dial)
 
-    def SendDatagram(self, data):
-        self.udpClient.sock.sendto(data, UdpAddress)
+    def SendDatagram(self, data: object):
+        self.udpClient.sock.sendto(json.dumps(data).encode(encoding="utf-8"), UdpAddress)
 
-    def SendBufferedDatagram(self, data):
+    def SendBufferedDatagram(self, data: object):
         now = time.perf_counter()
         if now - self.lastBufferedDataGramTime < .25:
             return
@@ -103,10 +103,26 @@ class MsFsConnector(PluginBase):
                 #     toggle.toggleState = data["FlightDirector"]
 
                 case "VS":
-                    toggle.toggleState = data["VerticalSpeed"]
+                    toggle.toggleState = data["VerticalSpeedMode"]
 
             toggle.UpdateVisuals()
 
+        now = time.monotonic()
+        for dial in self.dials:
+            match dial.selectedDialCode:
+                case "ALT":
+                    dial.SetDialState(int(data["Altitude"] / 100))
+
+                case "HDG":
+                    dial.SetDialState(int(data["Heading"]), now)
+
+                case "VS":
+                    dial.SetDialState(int(data["VerticalSpeed"] / 100))
+
+                case "SPD":
+                    dial.SetDialState(int(data["Speed"]))
+
+            dial.UpdateVisuals()
 
 class UdpClient(threading.Thread):
     def __init__(self, plugin):
@@ -120,4 +136,8 @@ class UdpClient(threading.Thread):
             data, addr = self.sock.recvfrom(100_000)
             decoded = data.decode()
             print(f"Received from {addr}: {decoded}")
-            self.plugin.UpdateActionsData(json.loads(decoded))
+
+            try:
+                self.plugin.UpdateActionsData(json.loads(decoded))
+            except Exception as ex:
+                print(ex)

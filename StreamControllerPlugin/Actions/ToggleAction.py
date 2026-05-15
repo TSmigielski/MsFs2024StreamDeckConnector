@@ -23,7 +23,7 @@ class ToggleAction(ActionBase):
             self.set_top_label("New")
 
         self.set_bottom_label("OFF")
-        self.plugin_base.SendBufferedDatagram(b"DataRequest")
+        self.plugin_base.SendBufferedDatagram({})
 
     def get_config_rows(self):
         self.prefRow = Ui.GetConfigRow("ToggleAction", Enums.ToggleActions, self.OnPrefInputChanged)
@@ -39,12 +39,10 @@ class ToggleAction(ActionBase):
 
         self.toggleState = not self.toggleState
 
-        payload = {
+        self.plugin_base.SendDatagram({
             "Toggle": self.selectedToggleCode,
-            "State": self.toggleState
-        }
-
-        self.plugin_base.SendDatagram(json.dumps(payload).encode(encoding="utf-8"))
+            "DesiredState": self.toggleState
+        })
 
     def OnPrefInputChanged(self, rowInput):
         self.SetSelectedToggle(rowInput.get_active())

@@ -11,6 +11,9 @@ public static class SimConnectExtensions
       public void RequestData(Definition dataDefinition) => simConnect.RequestDataOnSimObject(Request.Normal, dataDefinition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
       public void RequestDataDelayed(Definition dataDefinition) => simConnect.RequestDataOnSimObject(Request.Normal, dataDefinition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 5, 0, 1);
 
+      public void SetAltitude(int altitude) => simConnect.SetDataOnSimObject(Definition.AutopilotAltitude, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, new AutopilotAltitude(altitude));
+      public void SetVerticalSpeed(int verticalSpeed) => simConnect.SetDataOnSimObject(Definition.AutopilotVerticalSpeed, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, new AutopilotVerticalSpeed(verticalSpeed));
+
       public void Initialize()
       {
          simConnect.MapClientEventToSimEvent(Events.AutopilotOn, "AUTOPILOT_ON");
@@ -22,7 +25,8 @@ public static class SimConnectExtensions
          simConnect.MapClientEventToSimEvent(Events.AutopilotLevelerToggle, "AP_WING_LEVELER");
          simConnect.MapClientEventToSimEvent(Events.AutopilotAltituteHoldToggle, "AP_ALT_HOLD");
          simConnect.MapClientEventToSimEvent(Events.AutopilotHeadingSet, "HEADING_BUG_SET");
-         simConnect.MapClientEventToSimEvent(Events.AutopilotHeadingSetCurrent, "AP_HDG_CURRENT_HDG_SET");
+         // simConnect.MapClientEventToSimEvent(Events.AutopilotHeadingSetCurrent, "AP_HDG_CURRENT_HDG_SET");
+         simConnect.MapClientEventToSimEvent(Events.AutopilotSpeedSet, "AP_SPD_VAR_SET");
 
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT MASTER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
@@ -33,8 +37,17 @@ public static class SimConnectExtensions
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT HEADING LOCK DIR", "Degrees", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK VAR", "Feet", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT VERTICAL HOLD VAR", "Feet/minute", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT AIRSPEED HOLD VAR", "Knots", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
 
          simConnect.RegisterDataDefineStruct<AutopilotSettings>(Definition.AutopilotData);
+
+         simConnect.AddToDataDefinition(Definition.AutopilotAltitude, "AUTOPILOT ALTITUDE LOCK VAR", "Feet", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.RegisterDataDefineStruct<AutopilotAltitude>(Definition.AutopilotAltitude);
+
+         simConnect.AddToDataDefinition(Definition.AutopilotVerticalSpeed, "AUTOPILOT VERTICAL HOLD VAR", "Feet/minute", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.RegisterDataDefineStruct<AutopilotVerticalSpeed>(Definition.AutopilotVerticalSpeed);
+
 
          // Longpolling request, will transmit data set in the sim
          simConnect.RequestDataOnSimObject(Request.LongPolling, Definition.AutopilotData, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SECOND, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 1, 0);

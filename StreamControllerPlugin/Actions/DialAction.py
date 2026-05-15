@@ -1,7 +1,7 @@
 from src.backend.DeckManagement.InputIdentifier import Input
 from src.backend.PluginManager.ActionBase import ActionBase
 from ..Enums import Enums
-from ..Utils import Ui
+from ..Utils import TrailingThrottle, Ui
 from collections import deque
 import time
 
@@ -23,6 +23,8 @@ class DialAction(ActionBase):
         self.prevDialSpeedSlow = True
         self.lastDialTime = 0
         self.prevDialDeltas = deque(maxlen=DialAction.prevDialDeltasCount)
+        
+        self.udpThrottle = TrailingThrottle(self.SendDatagram, 100)
 
         settings = self.get_settings()
         if self.selectedDialKey in settings:
@@ -31,7 +33,7 @@ class DialAction(ActionBase):
         else:
             self.set_top_label("New")
 
-        self.plugin_base.SendBufferedDatagram(b"DataRequest")
+        self.plugin_base.SendBufferedDatagram({})
 
     def get_config_rows(self):
         self.prefRow = Ui.GetConfigRow("DialAction", Enums.DialActions, self.OnPrefInputChanged)
@@ -49,7 +51,7 @@ class DialAction(ActionBase):
                 self.HandleHeading(event)
 
             case "SPD":
-                self.HandleAtSpeed(event)
+                self.HandleSpeed(event)
 
             case "VS":
                 self.dialSpeed = 1
@@ -60,6 +62,7 @@ class DialAction(ActionBase):
                 return
 
         self.UpdateVisuals()
+        self.udpThrottle()
 
     def OnPrefInputChanged(self, rowInput):
         self.SetSelectedDial(rowInput.get_active())
@@ -97,8 +100,18 @@ class DialAction(ActionBase):
 
             case _:
                 text = "ERROR"
-            
+
         self.set_bottom_label(text)
+
+    def SendDatagram(self):
+        self.plugin_base.SendDatagram({
+            "Dial": self.selectedDialCode,
+            "DialValue": self.dialState
+        })
+
+    def SetDialState(self, newState, now):
+        if now - self.lastDialTime > 0.5:
+            self.dialState = newState
 
     def AdjustDialSpeed(self):
         now = time.monotonic()
@@ -120,6 +133,9 @@ class DialAction(ActionBase):
             case Input.Dial.Events.TURN_CCW:
                 self.dialState -= self.dialSpeed
 
+            case _:
+                return
+
         self.dialState %= 360
 
     def HandleAltitude(self, event):
@@ -129,6 +145,9 @@ class DialAction(ActionBase):
 
             case Input.Dial.Events.TURN_CCW:
                 self.dialState -= self.dialSpeed
+
+            case _:
+                return
 
         if self.dialState < 0:
             self.dialState = 0
@@ -147,18 +166,24 @@ class DialAction(ActionBase):
             case Input.Dial.Events.TURN_CCW:
                 self.dialState -= self.dialSpeed
 
+            case _:
+                return
+
         if self.dialState < -100:
             self.dialState = -100
         elif self.dialState > 100:
             self.dialState = 100
 
-    def HandleAtSpeed(self, event):
+    def HandleSpeed(self, event):
         match event:
             case Input.Dial.Events.TURN_CW:
                 self.dialState += self.dialSpeed
 
             case Input.Dial.Events.TURN_CCW:
                 self.dialState -= self.dialSpeed
+
+            case _:
+                return
 
         if self.dialState < 0:
             self.dialState = 0

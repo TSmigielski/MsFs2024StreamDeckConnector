@@ -2,5 +2,7 @@ namespace WineRelay.Enums.SimConnect;
 
 public enum Definition
 {
-   AutopilotData
+   AutopilotData,
+   AutopilotAltitude,
+   AutopilotVerticalSpeed
 }

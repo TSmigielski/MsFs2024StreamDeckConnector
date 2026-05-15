@@ -67,11 +67,11 @@ async Task UdpLoop()
    {
       var response = await udp.ReceiveAsync();
       remote = response.RemoteEndPoint;
-      ToggleActionModel? action;
+      ActionModel? action;
 
       try
       {
-         action = JsonSerializer.Deserialize<ToggleActionModel>(response.Buffer);
+         action = JsonSerializer.Deserialize<ActionModel>(response.Buffer);
          if (action == null)
             return;
       }
@@ -87,45 +87,89 @@ async Task UdpLoop()
 
       Console.WriteLine($"Received an Action:{Environment.NewLine}{JsonSerializer.Serialize(action)}");
 
-      switch (action.Toggle)
+      if (action.Toggle.HasValue)
       {
-         case ToggleAction.Ap:
-            simConnect.TransmitEvent(action.State ? Events.AutopilotOn : Events.AutopilotOff);
-            break;
-
-         case ToggleAction.Fd:
-            simConnect.TransmitEvent(Events.FlightDirectorToggle);
-            break;
-
-         case ToggleAction.Flc:
-            simConnect.TransmitEvent(Events.FlightLevelChangeToggle);
-            break;
-
-         case ToggleAction.Nav:
-            Console.WriteLine("Not yet implemented");
+         if (!HandleToggle(action.Toggle.Value, action.DesiredState ?? false))
             continue;
-
-         case ToggleAction.Vs:
-            simConnect.TransmitEvent(Events.VerticalSpeedSet, (uint)(action.State ? 1 : 0));
-            break;
-
-         case ToggleAction.Hdg:
-            simConnect.TransmitEvent(Events.AutopilotHeadingToggle);
-            break;
-
-         case ToggleAction.Lvl:
-            simConnect.TransmitEvent(Events.AutopilotLevelerToggle);
-            break;
-
-         case ToggleAction.Alt:
-            simConnect.TransmitEvent(Events.AutopilotAltituteHoldToggle);
-            break;
-
-         default:
-            Console.WriteLine("Unhandled ToggleAction: " + action.Toggle.ToString());
+      }
+      else if (action.Dial.HasValue)
+      {
+         if (!HandleDial(action.Dial.Value, action.DialValue ?? 0))
             continue;
       }
 
       simConnect.RequestDataDelayed(Definition.AutopilotData);
    }
+}
+
+bool HandleToggle(Toggle toggle, bool desiredState)
+{
+   switch (toggle)
+   {
+      case Toggle.Ap:
+         simConnect.TransmitEvent(desiredState ? Events.AutopilotOn : Events.AutopilotOff);
+         break;
+
+      case Toggle.Fd:
+         simConnect.TransmitEvent(Events.FlightDirectorToggle);
+         break;
+
+      case Toggle.Flc:
+         simConnect.TransmitEvent(Events.FlightLevelChangeToggle);
+         break;
+
+      case Toggle.Nav:
+         Console.WriteLine("Not yet implemented");
+         return false;
+
+      case Toggle.Vs:
+         simConnect.TransmitEvent(Events.VerticalSpeedSet, (uint)(desiredState ? 1 : 0));
+         break;
+
+      case Toggle.Hdg:
+         simConnect.TransmitEvent(Events.AutopilotHeadingToggle);
+         break;
+
+      case Toggle.Lvl:
+         simConnect.TransmitEvent(Events.AutopilotLevelerToggle);
+         break;
+
+      case Toggle.Alt:
+         simConnect.TransmitEvent(Events.AutopilotAltituteHoldToggle);
+         break;
+
+      default:
+         Console.WriteLine("Unhandled toggle action: " + toggle.ToString());
+         return false;
+   }
+
+   return true;
+}
+
+bool HandleDial(Dial dial, int dialValue)
+{
+   switch (dial)
+   {
+      case Dial.Alt:
+         simConnect.SetAltitude(dialValue * 100);
+         break;
+
+      case Dial.Hdg:
+         simConnect.TransmitEvent(Events.AutopilotHeadingSet, (uint)dialValue);
+         break;
+
+      case Dial.Vs:
+         simConnect.SetVerticalSpeed(dialValue * 100);
+         break;
+
+      case Dial.Spd:
+         simConnect.TransmitEvent(Events.AutopilotSpeedSet, (uint)dialValue);
+         break;
+
+      default:
+         Console.WriteLine("Unhandled dial action: " + dial.ToString());
+         return false;
+   }
+
+   return true;
 }

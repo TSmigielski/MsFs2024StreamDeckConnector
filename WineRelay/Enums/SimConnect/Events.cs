@@ -20,4 +20,9 @@ public enum Events
    /// </summary>
    AutopilotHeadingSet,
    AutopilotHeadingSetCurrent,
+
+   /// <summary>
+   /// Accepts an integer.
+   /// </summary>
+   AutopilotSpeedSet,
 }
