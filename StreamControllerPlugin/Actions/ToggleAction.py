@@ -1,11 +1,7 @@
-import gi
 import json
-from gi.repository import Gtk, Adw
 from src.backend.PluginManager.ActionBase import ActionBase
 from ..Enums import Enums
-
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
+from ..Utils import Ui
 
 
 class ToggleAction(ActionBase):
@@ -14,10 +10,8 @@ class ToggleAction(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def on_ready(self) -> None:
-        self.plugin_base.RegisterAction(self)
-        # icon_path = os.path.join(self.plugin_base.PATH, "Assets", "info.png")
-        # self.set_media(media_path=icon_path, size=0.75)
+    def on_ready(self):
+        self.plugin_base.RegisterToggle(self)
         self.selectedToggleIndex = None
         self.selectedToggleCode = None
         self.toggleState = False
@@ -32,37 +26,10 @@ class ToggleAction(ActionBase):
         self.plugin_base.SendBufferedDatagram(b"DataRequest")
 
     def get_config_rows(self):
-        self.storeModel = Gtk.ListStore.new([str, str])
-        for action in Enums.ToggleActions:
-            self.storeModel.append([action[1], action[0]])
-
-        self.prefRow = Adw.PreferencesRow(title="ToggleAction")
-        self.prefRowBox = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            margin_start=10,
-            margin_end=10,
-            margin_top=10,
-            margin_bottom=10
-        )
-
-        self.cellRenderer = Gtk.CellRendererText()
-        self.prefRowInput = Gtk.ComboBox.new_with_model(self.storeModel)
-        self.prefRowInput.pack_start(self.cellRenderer, True)
-        self.prefRowInput.add_attribute(self.cellRenderer, "text", 0)
+        self.prefRow = Ui.GetConfigRow("ToggleAction", Enums.ToggleActions, self.OnPrefInputChanged)
 
         if self.selectedToggleIndex is not None:
-            self.prefRowInput.set_active(self.selectedToggleIndex)
-
-        self.prefRowInput.connect("changed", self.OnPrefInputChanged)
-
-        self.prefRow.set_child(self.prefRowBox)
-        self.prefRowBox.append(Gtk.Label(
-            label="ToggleAction:",
-            hexpand=True,
-            xalign=0
-        ))
-
-        self.prefRowBox.append(self.prefRowInput)
+            self.prefRow.input.set_active(self.selectedToggleIndex)
 
         return [self.prefRow]
 

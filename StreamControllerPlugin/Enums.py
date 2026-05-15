@@ -9,3 +9,10 @@ class Enums:
         ["NAV", "NAV mode"],
         ["VS", "Vertical Speed"]
     ]
+
+    DialActions = [
+        ["ALT", "Altitude"],
+        ["HDG", "Heading"],
+        ["SPD", "Speed"],
+        ["VS", "Vertical Speed"]
+    ]
