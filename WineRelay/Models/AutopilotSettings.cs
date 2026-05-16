@@ -16,4 +16,6 @@ public struct AutopilotSettings
    public int Altitude { get; set; }
    public int VerticalSpeed { get; set; }
    public int Speed { get; set; }
+   public int IndicatedAltitude { get; set; }
+   public int IndicatedSpeed { get; set; }
 }

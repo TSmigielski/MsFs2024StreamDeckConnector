@@ -17,6 +17,7 @@ class DialAction(ActionBase):
         self.plugin_base.RegisterDial(self)
         self.selectedDialIndex = None
         self.selectedDialCode = None
+        self.resendOwn = False
 
         self.dialState = 0
         self.dialSpeed = 1
@@ -117,6 +118,11 @@ class DialAction(ActionBase):
         self.plugin_base.SendDatagram(data)
 
     def SetDialState(self, newState, now):
+        if self.resendOwn:
+            self.resendOwn = False
+            self.SendDatagram()
+            return
+
         if now - self.lastDialTime > 0.5:
             self.dialState = newState
 

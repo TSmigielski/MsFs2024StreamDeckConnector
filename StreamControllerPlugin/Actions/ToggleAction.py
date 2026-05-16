@@ -1,4 +1,3 @@
-import json
 from src.backend.PluginManager.ActionBase import ActionBase
 from ..Enums import Enums
 from ..Utils import Ui
@@ -22,7 +21,7 @@ class ToggleAction(ActionBase):
         else:
             self.set_top_label("New")
 
-        self.set_bottom_label("OFF")
+        self.set_bottom_label("")
         self.plugin_base.SendBufferedDatagram({})
 
     def get_config_rows(self):
@@ -43,6 +42,12 @@ class ToggleAction(ActionBase):
             "Toggle": self.selectedToggleCode,
             "DesiredState": self.toggleState
         })
+
+        if self.selectedToggleCode == "VS":
+            dial = self.plugin_base.GetDial("VS")
+            if dial is not None:
+                dial.resendOwn = True
+
 
     def OnPrefInputChanged(self, rowInput):
         self.SetSelectedToggle(rowInput.get_active())

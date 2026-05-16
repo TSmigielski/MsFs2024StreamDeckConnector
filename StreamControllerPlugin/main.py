@@ -125,6 +125,13 @@ class MsFsConnector(PluginBase):
 
             dial.UpdateVisuals()
 
+    def GetDial(self, dialCode: str) -> DialAction:
+        for dial in self.dials:
+            if dial.selectedDialCode == dialCode:
+                return dial
+
+        return None
+
 class UdpClient(threading.Thread):
     def __init__(self, plugin):
         super().__init__(daemon=True)
