@@ -2,12 +2,16 @@ namespace WineRelay.Enums.Udp;
 
 public enum Toggle
 {
+   Alt,
    Ap,
+   Apr,
+   At,
+   AtMan,
    Fd,
    Flc,
-   Nav,
-   Vs,
    Hdg,
    Lvl,
-   Alt
+   Nav,
+   Vs,
+   VNav
 }

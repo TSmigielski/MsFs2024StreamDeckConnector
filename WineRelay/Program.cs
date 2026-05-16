@@ -8,7 +8,7 @@ using WineRelay.Enums.SimConnect;
 using WineRelay.Enums.Udp;
 using WineRelay.Models;
 
-var debug = true;
+var debug = false;
 AutopilotSettings lastAutopilotSettings = default;
 
 var jsonSettings = new JsonSerializerOptions
@@ -108,9 +108,25 @@ bool HandleToggle(Toggle toggle, bool desiredState)
 {
    switch (toggle)
    {
+      case Toggle.Alt:
+         simConnect.TransmitEvent(Events.AutopilotAltituteHoldToggle);
+         break;
+
       case Toggle.Ap:
          simConnect.TransmitEvent(desiredState ? Events.AutopilotOn : Events.AutopilotOff);
          break;
+
+      case Toggle.Apr:
+         simConnect.TransmitEvent(Events.AutopilotApproachToggle);
+         break;
+
+      case Toggle.At:
+         simConnect.TransmitEvent(Events.AutopilotAutoThrottleToggle);
+         break;
+
+      case Toggle.AtMan:
+         Console.WriteLine("Not yet implemented");
+         return false;
 
       case Toggle.Fd:
          simConnect.TransmitEvent(Events.FlightDirectorToggle);
@@ -118,14 +134,6 @@ bool HandleToggle(Toggle toggle, bool desiredState)
 
       case Toggle.Flc:
          simConnect.TransmitEvent(Events.FlightLevelChangeToggle);
-         break;
-
-      case Toggle.Nav:
-         Console.WriteLine("Not yet implemented");
-         return false;
-
-      case Toggle.Vs:
-         simConnect.TransmitEvent(Events.VerticalSpeedSet, (uint)(desiredState ? 1 : 0));
          break;
 
       case Toggle.Hdg:
@@ -136,8 +144,16 @@ bool HandleToggle(Toggle toggle, bool desiredState)
          simConnect.TransmitEvent(Events.AutopilotLevelerToggle);
          break;
 
-      case Toggle.Alt:
-         simConnect.TransmitEvent(Events.AutopilotAltituteHoldToggle);
+      case Toggle.Nav:
+         simConnect.TransmitEvent(Events.AutopilotNavToggle);
+         break;
+
+      case Toggle.Vs:
+         simConnect.TransmitEvent(Events.VerticalSpeedSet, (uint)(desiredState ? 1 : 0));
+         break;
+
+      case Toggle.VNav:
+         simConnect.TransmitEvent(Events.AutopilotVNavToggle);
          break;
 
       default:

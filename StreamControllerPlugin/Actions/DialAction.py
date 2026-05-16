@@ -72,6 +72,7 @@ class DialAction(ActionBase):
     def OnPrefInputChanged(self, rowInput):
         self.SetSelectedDial(rowInput.get_active())
         self.UpdateSetting(self.selectedDialKey, self.selectedDialIndex)
+        self.plugin_base.SendDatagram({})
 
     def SetSelectedDial(self, index):
         self.selectedDialIndex = index

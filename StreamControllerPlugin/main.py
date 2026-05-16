@@ -16,7 +16,7 @@ from .Actions.DialAction import DialAction
 
 PluginId = "com_TomaszSmigielski_MsFs2024Connector"
 UdpAddress = ("127.0.0.1", 13337)
-Debug = True
+Debug = False
 
 
 class MsFsConnector(PluginBase):
@@ -83,28 +83,40 @@ class MsFsConnector(PluginBase):
         for toggle in self.toggles:
             match toggle.selectedToggleCode:
                 case "ALT":
-                    toggle.toggleState = data["AltitudeHold"]
+                    toggle.toggleState = data["AltitudeToggle"]
 
                 case "AP":
-                    toggle.toggleState = data["AutopilotMaster"]
+                    toggle.toggleState = data["AutopilotMasterToggle"]
+
+                case "APR":
+                    toggle.toggleState = data["ApproachToggle"]
+
+                case "AT":
+                    toggle.toggleState = data["AutoThrottleToggle"]
+
+                case "ATMAN":
+                    toggle.toggleState = data["AutoThrottleManToggle"]
 
                 case "FD":
-                    toggle.toggleState = data["FlightDirector"]
+                    toggle.toggleState = data["FlightDirectorToggle"]
 
                 case "FLC":
-                    toggle.toggleState = data["FlightLevelChange"]
+                    toggle.toggleState = data["FlightLevelChangeToggle"]
 
                 case "HDG":
-                    toggle.toggleState = data["HeadingMode"]
+                    toggle.toggleState = data["HeadingToggle"]
 
                 case "LVL":
-                    toggle.toggleState = data["LevelerMode"]
+                    toggle.toggleState = data["LevelerToggle"]
 
-                # case "NAV":
-                #     toggle.toggleState = data["FlightDirector"]
+                case "NAV":
+                    toggle.toggleState = data["NavigationToggle"]
 
                 case "VS":
-                    toggle.toggleState = data["VerticalSpeedMode"]
+                    toggle.toggleState = data["VerticalSpeedToggle"]
+
+                # case "VNAV":
+                #     toggle.toggleState = data["VerticalNavigationToggle"]
 
             toggle.UpdateVisuals()
 
@@ -112,16 +124,16 @@ class MsFsConnector(PluginBase):
         for dial in self.dials:
             match dial.selectedDialCode:
                 case "ALT":
-                    dial.SetDialState(int(data["Altitude"] / 100), now)
+                    dial.SetDialState(int(data["SelectedAltitude"] / 100), now)
 
                 case "HDG":
-                    dial.SetDialState(int(data["Heading"]), now)
+                    dial.SetDialState(int(data["SelectedHeading"]), now)
 
                 case "VS":
-                    dial.SetDialState(int(data["VerticalSpeed"] / 100), now)
+                    dial.SetDialState(int(data["SelectedVerticalSpeed"] / 100), now)
 
                 case "SPD":
-                    dial.SetDialState(int(data["Speed"]), now)
+                    dial.SetDialState(int(data["SelectedSpeed"]), now)
 
             dial.UpdateVisuals()
 
@@ -141,7 +153,7 @@ class UdpClient(threading.Thread):
 
     def run(self):
         while True:
-            data, addr = self.sock.recvfrom(100_000)
+            data, addr = self.sock.recvfrom(10_000)
             decoded = data.decode()
             if Debug:
                 print(f"Received from {addr}: {decoded}")

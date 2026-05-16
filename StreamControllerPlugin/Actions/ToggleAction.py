@@ -52,6 +52,7 @@ class ToggleAction(ActionBase):
     def OnPrefInputChanged(self, rowInput):
         self.SetSelectedToggle(rowInput.get_active())
         self.UpdateSetting(self.selectedToggleKey, self.selectedToggleIndex)
+        self.plugin_base.SendDatagram({})
 
     def SetSelectedToggle(self, index):
         self.selectedToggleIndex = index

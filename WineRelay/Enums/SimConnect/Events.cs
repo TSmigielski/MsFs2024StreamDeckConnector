@@ -26,5 +26,9 @@ public enum Events
    AutopilotSpeedSet,
    AutopilotHeadingSetCurrent,
    AutopilotAltitudeSetCurrent,
-   // AutopilotAltitudeSetCurrent
+
+   AutopilotApproachToggle,
+   AutopilotAutoThrottleToggle,
+   AutopilotNavToggle,
+   AutopilotVNavToggle,
 }
