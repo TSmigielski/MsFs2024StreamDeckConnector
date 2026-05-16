@@ -19,10 +19,12 @@ public enum Events
    /// Accepts an integer.
    /// </summary>
    AutopilotHeadingSet,
-   AutopilotHeadingSetCurrent,
 
    /// <summary>
    /// Accepts an integer.
    /// </summary>
    AutopilotSpeedSet,
+   AutopilotHeadingSetCurrent,
+   AutopilotAltitudeSetCurrent,
+   // AutopilotAltitudeSetCurrent
 }

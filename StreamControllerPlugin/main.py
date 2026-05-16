@@ -16,6 +16,7 @@ from .Actions.DialAction import DialAction
 
 PluginId = "com_TomaszSmigielski_MsFs2024Connector"
 UdpAddress = ("127.0.0.1", 13337)
+Debug = True
 
 
 class MsFsConnector(PluginBase):
@@ -111,16 +112,16 @@ class MsFsConnector(PluginBase):
         for dial in self.dials:
             match dial.selectedDialCode:
                 case "ALT":
-                    dial.SetDialState(int(data["Altitude"] / 100))
+                    dial.SetDialState(int(data["Altitude"] / 100), now)
 
                 case "HDG":
                     dial.SetDialState(int(data["Heading"]), now)
 
                 case "VS":
-                    dial.SetDialState(int(data["VerticalSpeed"] / 100))
+                    dial.SetDialState(int(data["VerticalSpeed"] / 100), now)
 
                 case "SPD":
-                    dial.SetDialState(int(data["Speed"]))
+                    dial.SetDialState(int(data["Speed"]), now)
 
             dial.UpdateVisuals()
 
@@ -135,7 +136,8 @@ class UdpClient(threading.Thread):
         while True:
             data, addr = self.sock.recvfrom(100_000)
             decoded = data.decode()
-            print(f"Received from {addr}: {decoded}")
+            if Debug:
+                print(f"Received from {addr}: {decoded}")
 
             try:
                 self.plugin.UpdateActionsData(json.loads(decoded))

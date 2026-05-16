@@ -43,26 +43,30 @@ class DialAction(ActionBase):
         if self.selectedDialCode != "VS" and (event == Input.Dial.Events.TURN_CW or event == Input.Dial.Events.TURN_CCW):
             self.AdjustDialSpeed()
 
+        sendDatagram = False
+
         match self.selectedDialCode:
             case "ALT":
-                self.HandleAltitude(event)
+                sendDatagram = self.HandleAltitude(event)
 
             case "HDG":
-                self.HandleHeading(event)
+                sendDatagram = self.HandleHeading(event)
 
             case "SPD":
-                self.HandleSpeed(event)
+                sendDatagram = self.HandleSpeed(event)
 
             case "VS":
                 self.dialSpeed = 1
-                self.HandleVerticalSpeed(event)
+                sendDatagram = self.HandleVerticalSpeed(event)
 
             case _:
                 self.show_error()
                 return
 
         self.UpdateVisuals()
-        self.udpThrottle()
+
+        if sendDatagram:
+            self.udpThrottle()
 
     def OnPrefInputChanged(self, rowInput):
         self.SetSelectedDial(rowInput.get_active())
@@ -103,11 +107,14 @@ class DialAction(ActionBase):
 
         self.set_bottom_label(text)
 
-    def SendDatagram(self):
-        self.plugin_base.SendDatagram({
-            "Dial": self.selectedDialCode,
-            "DialValue": self.dialState
-        })
+    def SendDatagram(self, data: object = None):
+        if data is None:
+            data = {
+                "Dial": self.selectedDialCode,
+                "DialValue": self.dialState
+            }
+
+        self.plugin_base.SendDatagram(data)
 
     def SetDialState(self, newState, now):
         if now - self.lastDialTime > 0.5:
@@ -125,8 +132,15 @@ class DialAction(ActionBase):
             self.dialSpeed = 1
             self.prevDialSpeedSlow = True
 
-    def HandleHeading(self, event):
+    def HandleHeading(self, event) -> bool:
         match event:
+            case Input.Dial.Events.DOWN:
+                self.SendDatagram({
+                    "Dial": self.selectedDialCode,
+                    "DesiredState": True
+                })
+                return False
+
             case Input.Dial.Events.TURN_CW:
                 self.dialState += self.dialSpeed
 
@@ -134,12 +148,20 @@ class DialAction(ActionBase):
                 self.dialState -= self.dialSpeed
 
             case _:
-                return
+                return False
 
         self.dialState %= 360
+        return True
 
-    def HandleAltitude(self, event):
+    def HandleAltitude(self, event) -> bool:
         match event:
+            case Input.Dial.Events.DOWN:
+                self.SendDatagram({
+                    "Dial": self.selectedDialCode,
+                    "DesiredState": True
+                })
+                return False
+
             case Input.Dial.Events.TURN_CW:
                 self.dialState += self.dialSpeed
 
@@ -147,18 +169,20 @@ class DialAction(ActionBase):
                 self.dialState -= self.dialSpeed
 
             case _:
-                return
+                return False
 
         if self.dialState < 0:
             self.dialState = 0
         elif self.dialState > 510:
             self.dialState = 510
 
-    def HandleVerticalSpeed(self, event):
+        return True
+
+    def HandleVerticalSpeed(self, event) -> bool:
         match event:
             case Input.Dial.Events.DOWN:
                 self.dialState = 0
-                return
+                return True
 
             case Input.Dial.Events.TURN_CW:
                 self.dialState += self.dialSpeed
@@ -167,15 +191,25 @@ class DialAction(ActionBase):
                 self.dialState -= self.dialSpeed
 
             case _:
-                return
+                return False
 
-        if self.dialState < -100:
-            self.dialState = -100
-        elif self.dialState > 100:
-            self.dialState = 100
+        if self.dialState < -99:
+            self.dialState = -99
+        elif self.dialState > 99:
+            self.dialState = 99
 
-    def HandleSpeed(self, event):
+        self.lastDialTime = time.monotonic()
+        return True
+
+    def HandleSpeed(self, event) -> bool:
         match event:
+            case Input.Dial.Events.DOWN:
+                self.SendDatagram({
+                    "Dial": self.selectedDialCode,
+                    "DesiredState": True
+                })
+                return False
+
             case Input.Dial.Events.TURN_CW:
                 self.dialState += self.dialSpeed
 
@@ -183,9 +217,11 @@ class DialAction(ActionBase):
                 self.dialState -= self.dialSpeed
 
             case _:
-                return
+                return False
 
         if self.dialState < 0:
             self.dialState = 0
         elif self.dialState > 999:
             self.dialState = 999
+
+        return True

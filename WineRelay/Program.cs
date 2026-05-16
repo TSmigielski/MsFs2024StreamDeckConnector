@@ -8,6 +8,7 @@ using WineRelay.Enums.SimConnect;
 using WineRelay.Enums.Udp;
 using WineRelay.Models;
 
+var debug = true;
 var jsonSettings = new JsonSerializerOptions
 {
    IncludeFields = true,
@@ -46,7 +47,9 @@ void DispatchedEventHandler(SIMCONNECT_RECV pData, uint cbData)
          switch ((Definition)simObject.dwDefineID)
          {
             case Definition.AutopilotData:
-               Console.WriteLine($"Sending to: {remote.Address}:{remote.Port}");
+               if (debug)
+                  Console.WriteLine($"Sending to: {remote.Address}:{remote.Port}");
+
                udp.Send(JsonSerializer.SerializeToUtf8Bytes(simObject.dwData[0]), remote);
                return;
 
@@ -85,7 +88,8 @@ async Task UdpLoop()
          continue;
       }
 
-      Console.WriteLine($"Received an Action:{Environment.NewLine}{JsonSerializer.Serialize(action)}");
+      if (debug)
+         Console.WriteLine($"Received an Action:{Environment.NewLine}{JsonSerializer.Serialize(action)}");
 
       if (action.Toggle.HasValue)
       {
@@ -94,7 +98,7 @@ async Task UdpLoop()
       }
       else if (action.Dial.HasValue)
       {
-         if (!HandleDial(action.Dial.Value, action.DialValue ?? 0))
+         if (!HandleDial(action.Dial.Value, action.DialValue ?? 0, action.DesiredState is true))
             continue;
       }
 
@@ -146,16 +150,22 @@ bool HandleToggle(Toggle toggle, bool desiredState)
    return true;
 }
 
-bool HandleDial(Dial dial, int dialValue)
+bool HandleDial(Dial dial, int dialValue, bool special)
 {
    switch (dial)
    {
       case Dial.Alt:
-         simConnect.SetAltitude(dialValue * 100);
+         if (special)
+            simConnect.TransmitEvent(Events.AutopilotAltitudeSetCurrent);
+         else
+            simConnect.SetAltitude(dialValue * 100);
          break;
 
       case Dial.Hdg:
-         simConnect.TransmitEvent(Events.AutopilotHeadingSet, (uint)dialValue);
+         if (special)
+            simConnect.TransmitEvent(Events.AutopilotHeadingSetCurrent);
+         else
+            simConnect.TransmitEvent(Events.AutopilotHeadingSet, (uint)dialValue);
          break;
 
       case Dial.Vs:
@@ -163,7 +173,8 @@ bool HandleDial(Dial dial, int dialValue)
          break;
 
       case Dial.Spd:
-         simConnect.TransmitEvent(Events.AutopilotSpeedSet, (uint)dialValue);
+         if (!special)
+            simConnect.TransmitEvent(Events.AutopilotSpeedSet, (uint)dialValue);
          break;
 
       default:

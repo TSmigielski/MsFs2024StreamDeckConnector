@@ -10,7 +10,7 @@ public struct AutopilotAltitude
 
 public struct AutopilotVerticalSpeed
 {
-   public int VerticalSpeed { get; set; }
+   public float VerticalSpeed { get; set; }
    public AutopilotVerticalSpeed() { }
-   public AutopilotVerticalSpeed(int vs) => VerticalSpeed = vs;
+   public AutopilotVerticalSpeed(float vs) => VerticalSpeed = vs;
 }

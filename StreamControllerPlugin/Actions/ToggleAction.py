@@ -59,4 +59,4 @@ class ToggleAction(ActionBase):
         self.set_settings(settings)
 
     def UpdateVisuals(self):
-        self.set_bottom_label("ON" if self.toggleState else "OFF")
+        self.set_bottom_label("*" if self.toggleState else "")
