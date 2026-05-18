@@ -69,4 +69,4 @@ I am too lazy to change this to a simple bash script but definitely will in the 
 For now I simply start this with `dotnet run` or `dotnet build ../WineRelay && dotnet run` after making changes in the WineRelay.
 
 # Contributing
-Feel free to submit open issues or submit pull requests.
+Feel free to open issues or submit pull requests.
