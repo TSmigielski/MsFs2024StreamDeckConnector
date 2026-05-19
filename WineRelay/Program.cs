@@ -156,6 +156,10 @@ bool HandleToggle(Toggle toggle, bool desiredState)
          simConnect.TransmitEvent(Events.AutopilotVNavToggle);
          break;
 
+      case Toggle.Yd:
+         simConnect.TransmitEvent(Events.YawDamperToggle);
+         break;
+
       default:
          Console.WriteLine("Unhandled toggle action: " + toggle.ToString());
          return false;

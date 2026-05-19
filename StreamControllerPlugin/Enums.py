@@ -12,6 +12,7 @@ class Enums:
         ["NAV", "Navigation"],
         ["VS", "Vertical Speed"],
         ["VNAV", "Vertical Navigation"],
+        ["YD", "Yaw Damper"]
     ]
 
     DialActions = [

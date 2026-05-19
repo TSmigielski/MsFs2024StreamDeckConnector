@@ -13,5 +13,6 @@ public enum Toggle
    Lvl,
    Nav,
    Vs,
-   VNav
+   VNav,
+   Yd
 }

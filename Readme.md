@@ -22,6 +22,7 @@ Sometimes the value doesn't change, for example you cannot turn the FD off when 
 - Wing leveler (LVL) aka. blue button
 - Navigation mode (NAV)
 - Vertical speed (VS)
+- Yaw damper (YD)
 
 ### Dials
 These allow you to dial in a specifc number shown on the touchscreen display above the dials.
@@ -41,9 +42,6 @@ The min and max values get updated with the flown airplane's min and max auto th
 - Vertical navigation mode (VNAV)
 
 ## Next on my list
-- Auto throttle (AT + MAN/FMS) - **currently working on this**
-- Vertical navigation mode (VNAV). I've looked for hours, but cannot find the right events, I'll probably have to reach out on some forum,
-maybe even contact MS themselves (or rather the developer responsible for the Sim) because even on the forums I've only found other lost people in this regard.
 - COM/NAV radios
 
 # Requirements

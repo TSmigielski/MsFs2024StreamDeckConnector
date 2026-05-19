@@ -118,6 +118,9 @@ class MsFsConnector(PluginBase):
                 # case "VNAV":
                 #     toggle.toggleState = data["VerticalNavigationToggle"]
 
+                case "YD":
+                    toggle.toggleState = data["YawDamperToggle"]
+
             toggle.UpdateVisuals()
 
         now = time.monotonic()

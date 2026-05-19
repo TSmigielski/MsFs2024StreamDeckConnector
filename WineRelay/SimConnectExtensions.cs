@@ -31,7 +31,8 @@ public static class SimConnectExtensions
          simConnect.MapClientEventToSimEvent(Events.AutopilotApproachToggle, "AP_APR_HOLD");
          simConnect.MapClientEventToSimEvent(Events.AutopilotAutoThrottleToggle, "AUTO_THROTTLE_ARM");
          simConnect.MapClientEventToSimEvent(Events.AutopilotNavToggle, "AP_NAV1_HOLD");
-         simConnect.MapClientEventToSimEvent(Events.AutopilotVNavToggle, "VNAV_TOGGLE");
+         // simConnect.MapClientEventToSimEvent(Events.AutopilotVNavToggle, "VNAV_TOGGLE");
+         simConnect.MapClientEventToSimEvent(Events.YawDamperToggle, "YAW_DAMPER_TOGGLE");
 
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT MASTER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
@@ -45,6 +46,7 @@ public static class SimConnectExtensions
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT NAV1 LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT VERTICAL HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          // simConnect.AddToDataDefinition(Definition.AutopilotData, "GPS HAS GLIDEPATH", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT YAW DAMPER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
 
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK VAR", "Feet", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT HEADING LOCK DIR", "Degrees", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);

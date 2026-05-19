@@ -17,6 +17,7 @@ public struct AutopilotSettings
    public bool NavigationToggle { get; set; }
    public bool VerticalSpeedToggle { get; set; }
    // public bool VerticalNavigationToggle { get; set; }
+   public bool YawDamperToggle { get; set; }
 
    public int SelectedAltitude { get; set; }
    public int SelectedHeading { get; set; }
