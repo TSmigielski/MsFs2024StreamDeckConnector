@@ -37,8 +37,8 @@ public static class SimConnectExtensions
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT MASTER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT APPROACH HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
-         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOTHROTTLE ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
-         simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT MANAGED THROTTLE ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "Z:SF50_AUTOTHROTTLE_STATUS", "number", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "L:XMLVAR_SPEEDISMANUALLYSET", "number", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT FLIGHT LEVEL CHANGE", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT HEADING LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
@@ -63,6 +63,9 @@ public static class SimConnectExtensions
 
          simConnect.AddToDataDefinition(Definition.AutopilotVerticalSpeed, "AUTOPILOT VERTICAL HOLD VAR", "Feet/minute", SIMCONNECT_DATATYPE.FLOAT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.RegisterDataDefineStruct<AutopilotVerticalSpeed>(Definition.AutopilotVerticalSpeed);
+
+         simConnect.AddToDataDefinition(Definition.AutoThrottleSpeedManuallySet, "L:XMLVAR_SPEEDISMANUALLYSET", "number", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.RegisterDataDefineStruct<AutoThrottleSpeedManuallySet>(Definition.AutoThrottleSpeedManuallySet);
 
 
          // Longpolling request, will transmit data set in the sim

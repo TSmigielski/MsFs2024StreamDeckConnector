@@ -8,8 +8,8 @@ public struct AutopilotSettings
    public bool AltitudeToggle { get; set; }
    public bool AutopilotMasterToggle { get; set; }
    public bool ApproachToggle { get; set; }
-   public bool AutoThrottleToggle { get; set; }
-   public bool AutoThrottleManToggle { get; set; }
+   public double AutoThrottleToggle { get; set; }
+   public double AutoThrottleManToggle { get; set; }
    public bool FlightDirectorToggle { get; set; }
    public bool FlightLevelChangeToggle { get; set; }
    public bool HeadingToggle { get; set; }

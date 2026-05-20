@@ -93,9 +93,7 @@ class MsFsConnector(PluginBase):
 
                 case "AT":
                     toggle.toggleState = data["AutoThrottleToggle"]
-
-                case "ATMAN":
-                    toggle.toggleState = data["AutoThrottleManToggle"]
+                    toggle.manuallySet = data["AutoThrottleManToggle"]
 
                 case "FD":
                     toggle.toggleState = data["FlightDirectorToggle"]

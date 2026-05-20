@@ -125,8 +125,8 @@ bool HandleToggle(Toggle toggle, bool desiredState)
          break;
 
       case Toggle.AtMan:
-         Console.WriteLine("Not yet implemented");
-         return false;
+         simConnect.SetDataOnSimObject(Definition.AutoThrottleSpeedManuallySet, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, new AutoThrottleSpeedManuallySet(desiredState));
+         break;
 
       case Toggle.Fd:
          simConnect.TransmitEvent(Events.FlightDirectorToggle);

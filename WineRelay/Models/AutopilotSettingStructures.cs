@@ -14,3 +14,10 @@ public struct AutopilotVerticalSpeed
    public AutopilotVerticalSpeed() { }
    public AutopilotVerticalSpeed(float vs) => VerticalSpeed = vs;
 }
+
+public struct AutoThrottleSpeedManuallySet
+{
+   public double ManuallySet { get; set; }
+   public AutoThrottleSpeedManuallySet() { }
+   public AutoThrottleSpeedManuallySet(bool manuallySet) => ManuallySet = manuallySet ? 1 : 0;
+}
