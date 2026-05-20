@@ -125,7 +125,7 @@ bool HandleToggle(Toggle toggle, bool desiredState)
          break;
 
       case Toggle.AtMan:
-         simConnect.SetDataOnSimObject(Definition.AutoThrottleSpeedManuallySet, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, new AutoThrottleSpeedManuallySet(desiredState));
+         simConnect.SetDataOnSimObject(Definition.AutoThrottleSpeedManuallySet, new AutoThrottleSpeedManuallySet(desiredState));
          break;
 
       case Toggle.Fd:
@@ -153,7 +153,7 @@ bool HandleToggle(Toggle toggle, bool desiredState)
          break;
 
       case Toggle.VNav:
-         simConnect.TransmitEvent(Events.AutopilotVNavToggle);
+         simConnect.SetDataOnSimObject(Definition.AutopilotVnavMode, new AutopilotVnavMode(desiredState));
          break;
 
       case Toggle.Yd:

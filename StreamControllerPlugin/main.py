@@ -113,8 +113,8 @@ class MsFsConnector(PluginBase):
                 case "VS":
                     toggle.toggleState = data["VerticalSpeedToggle"]
 
-                # case "VNAV":
-                #     toggle.toggleState = data["VerticalNavigationToggle"]
+                case "VNAV":
+                    toggle.toggleState = data["VerticalNavigationToggle"]
 
                 case "YD":
                     toggle.toggleState = data["YawDamperToggle"]

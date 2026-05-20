@@ -21,3 +21,10 @@ public struct AutoThrottleSpeedManuallySet
    public AutoThrottleSpeedManuallySet() { }
    public AutoThrottleSpeedManuallySet(bool manuallySet) => ManuallySet = manuallySet ? 1 : 0;
 }
+
+public struct AutopilotVnavMode
+{
+   public double VnavEnabled { get; set; }
+   public AutopilotVnavMode() { }
+   public AutopilotVnavMode(bool enabled) => VnavEnabled = enabled ? 1 : 0;
+}

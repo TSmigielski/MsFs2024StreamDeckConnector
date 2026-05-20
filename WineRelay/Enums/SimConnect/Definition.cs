@@ -5,5 +5,6 @@ public enum Definition
    AutopilotData,
    AutopilotAltitude,
    AutopilotVerticalSpeed,
+   AutopilotVnavMode,
    AutoThrottleSpeedManuallySet
 }

@@ -30,6 +30,5 @@ public enum Events
    AutopilotApproachToggle,
    AutopilotAutoThrottleToggle,
    AutopilotNavToggle,
-   AutopilotVNavToggle,
    YawDamperToggle
 }

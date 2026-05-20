@@ -11,8 +11,10 @@ public static class SimConnectExtensions
       public void RequestData(Definition dataDefinition) => simConnect.RequestDataOnSimObject(Request.Normal, dataDefinition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
       public void RequestDataDelayed(Definition dataDefinition) => simConnect.RequestDataOnSimObject(Request.Normal, dataDefinition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 5, 0, 1);
 
-      public void SetAltitude(int altitude) => simConnect.SetDataOnSimObject(Definition.AutopilotAltitude, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, new AutopilotAltitude(altitude));
-      public void SetVerticalSpeed(int verticalSpeed) => simConnect.SetDataOnSimObject(Definition.AutopilotVerticalSpeed, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, new AutopilotVerticalSpeed(verticalSpeed));
+      public void SetDataOnSimObject(Definition definition, object structData) => simConnect.SetDataOnSimObject(definition, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, structData);
+
+      public void SetAltitude(int altitude) => simConnect.SetDataOnSimObject(Definition.AutopilotAltitude, new AutopilotAltitude(altitude));
+      public void SetVerticalSpeed(int verticalSpeed) => simConnect.SetDataOnSimObject(Definition.AutopilotVerticalSpeed, new AutopilotVerticalSpeed(verticalSpeed));
 
       public void Initialize()
       {
@@ -31,7 +33,6 @@ public static class SimConnectExtensions
          simConnect.MapClientEventToSimEvent(Events.AutopilotApproachToggle, "AP_APR_HOLD");
          simConnect.MapClientEventToSimEvent(Events.AutopilotAutoThrottleToggle, "AUTO_THROTTLE_ARM");
          simConnect.MapClientEventToSimEvent(Events.AutopilotNavToggle, "AP_NAV1_HOLD");
-         // simConnect.MapClientEventToSimEvent(Events.AutopilotVNavToggle, "VNAV_TOGGLE");
          simConnect.MapClientEventToSimEvent(Events.YawDamperToggle, "YAW_DAMPER_TOGGLE");
 
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
@@ -45,7 +46,7 @@ public static class SimConnectExtensions
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT WING LEVELER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT NAV1 LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT VERTICAL HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
-         // simConnect.AddToDataDefinition(Definition.AutopilotData, "GPS HAS GLIDEPATH", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.AddToDataDefinition(Definition.AutopilotData, "L:XMLVAR_VNAVBUTTONVALUE", "number", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT YAW DAMPER", "Bool", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
 
          simConnect.AddToDataDefinition(Definition.AutopilotData, "AUTOPILOT ALTITUDE LOCK VAR", "Feet", SIMCONNECT_DATATYPE.INT32, 0, SimConnect.SIMCONNECT_UNUSED);
@@ -66,6 +67,9 @@ public static class SimConnectExtensions
 
          simConnect.AddToDataDefinition(Definition.AutoThrottleSpeedManuallySet, "L:XMLVAR_SPEEDISMANUALLYSET", "number", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
          simConnect.RegisterDataDefineStruct<AutoThrottleSpeedManuallySet>(Definition.AutoThrottleSpeedManuallySet);
+
+         simConnect.AddToDataDefinition(Definition.AutopilotVnavMode, "L:XMLVAR_VNAVBUTTONVALUE", "number", SIMCONNECT_DATATYPE.FLOAT64, 0, SimConnect.SIMCONNECT_UNUSED);
+         simConnect.RegisterDataDefineStruct<AutopilotVnavMode>(Definition.AutopilotVnavMode);
 
 
          // Longpolling request, will transmit data set in the sim
